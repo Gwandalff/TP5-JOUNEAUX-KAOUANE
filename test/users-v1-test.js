@@ -71,7 +71,7 @@ describe('Users tests', () => {
     chai
       .request(app)
       .post('/v1/users')
-      .send({name: 'Robert', login: 'roro', age: 23})
+      .send({name: 'Robert', login: 'roro', age: 23, password: 'P4ssW0rD'})
       .end((err, res) => {
         res
           .should
@@ -118,6 +118,16 @@ describe('Users tests', () => {
           .login
           .should
           .equal('roro')
+        res
+          .body
+          .should
+          .have
+          .property('password')
+        res
+          .body
+          .password
+          .should
+          .equal('P4ssW0rD')
         done()
       })
   })
@@ -187,6 +197,56 @@ describe('Users tests', () => {
           .login
           .should
           .equal('pedro')
+        res
+          .body
+          .password
+          .should
+          .equal('password')
+        done()
+      })
+  })
+
+  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
+    chai
+      .request(app)
+      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+      .send({password: 'newPassword'})
+      .end((err, res) => {
+        res
+          .should
+          .have
+          .status(200)
+        res.should.be.json
+        res
+          .body
+          .should
+          .be
+          .a('object')
+        res
+          .body
+          .should
+          .have
+          .property('id')
+        res
+          .body
+          .id
+          .should
+          .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+        res
+          .body
+          .name
+          .should
+          .equal('Robertinio')
+        res
+          .body
+          .login
+          .should
+          .equal('pedro')
+        res
+          .body
+          .password
+          .should
+          .equal('newPassword')
         done()
       })
   })
