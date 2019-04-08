@@ -171,3 +171,4 @@ Vous réaliserer un premier appel en POST au service /v1/auth/login afin de réc
 Vous pourrez alors appeler les autres méthodes de l'API en renseignant le champ Authorization dans le header (https://slides.com/stephmichel/http#/18/6).
 
 (tag : **TP5-ESIR-STEP4**)
+
