@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
 
-let usersModel = undefined
+let tokenModel = undefined
 
-/* Control usermodel initialisation */
+/* Control tokenModel initialisation */
 router.use((req, res, next) => {
   /* istanbul ignore if */
-  if (!usersModel) {
+  if (!tokenModel) {
     res
       .status(500)
       .json({message: 'model not initialised'})
@@ -15,36 +15,53 @@ router.use((req, res, next) => {
 })
 
 /* GET a specific user by id */
-router.get('/login', function (req, res, next) {
-  
+router.get('/verifyaccess', function (req, res, next) {
+    let token = null
+    try{
+      token = req.headers.authorization.split(" ")[1]
+    }
+    catch(error){
+      res
+      .status(401)
+      .json({code : 0,
+             type : "authorization",
+             message : "no access token"})
+    }
+    if(token){
+      tokenModel.checkJWT(token)
+      .then(() => {
+        res
+        .status(200)
+        .json({message : "valid access token"})
+      })
+      .catch(() => {
+        res
+        .status(401)
+        .json({code : 0, 
+               type: "authorization", 
+               message : "unvalid access token"})
+      })
+    }
+  })
+
+router.post('/login', function (req, res, next) {
+  tokenModel.getJWT(req.body)
+  .then((token) => {
     res
-      .status(400)
-      .json({message: 'Wrong parameter'})
+    .status(200)
+    .json({access_token : token, expirity : tokenModel.getExpirity()})
+  })
+  .catch(() => {
+    res
+    .status(401)
+    .json({ code    : 0,
+            type    : "authorization",
+            message : "unauthorize user"})
+  }) 
 })
 
 
-
-const USER = tcomb.struct({
-    id: tcomb.String,
-    name: tcomb.String,
-    login: tcomb.String,
-    age: tcomb.Number
-}, {strict: true})
-
-
-
-{
-  "login": "string",
-  "paswword": "string"
-} 
-
-const login = (id) => {
-    const usersFound = users.filter((user) => user.id === id)
-    return usersFound.length >= 1
-        ? usersFound[0]
-        : undefined
+module.exports = (model) => {
+  tokenModel = model 
+  return router
 }
-
-
-
-st.fan.michel@gmail.com

@@ -121,6 +121,24 @@ const remove = (id) => {
     }
 }
 
+const verifyUser = (login, password) => {
+    return new Promise((resolve, reject) => {
+        const usersFound = users.filter((user) => user.login === login)
+        if (usersFound.length >= 1){
+            bcrypt.compare(password, usersFound[0].password)
+            .then((res) => {
+                res ? resolve() : reject()
+            })
+            .catch(() => {
+                reject()
+            })
+        }
+        else {
+            reject()
+        }
+    })
+}
+
 function validateUser(user) {
     let result = false
     /* istanbul ignore else */
@@ -140,3 +158,4 @@ exports.getAll = getAll
 exports.add = add
 exports.update = update
 exports.remove = remove
+exports.verifyUser = verifyUser
