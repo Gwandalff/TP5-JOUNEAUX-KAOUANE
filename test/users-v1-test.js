@@ -2,6 +2,9 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const {app} = require('../app')
 
+const bcrypt = require('bcrypt')
+const salt = bcrypt.genSaltSync(10)
+
 chai.should()
 chai.use(chaiHttp)
 
@@ -118,16 +121,6 @@ describe('Users tests', () => {
           .login
           .should
           .equal('roro')
-        res
-          .body
-          .should
-          .have
-          .property('password')
-        res
-          .body
-          .password
-          .should
-          .equal('P4ssW0rD')
         done()
       })
   })
@@ -197,11 +190,6 @@ describe('Users tests', () => {
           .login
           .should
           .equal('pedro')
-        res
-          .body
-          .password
-          .should
-          .equal('password')
         done()
       })
   })
@@ -242,11 +230,6 @@ describe('Users tests', () => {
           .login
           .should
           .equal('pedro')
-        res
-          .body
-          .password
-          .should
-          .equal('newPassword')
         done()
       })
   })
