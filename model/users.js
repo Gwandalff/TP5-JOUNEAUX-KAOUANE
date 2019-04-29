@@ -98,10 +98,7 @@ const update = (id, newUserProperties) => {
             ...newUserProperties
         }
 
-        // Control data to patch
         if (validateUser(newUser)) {
-            // Object.assign permet d'éviter la suppression de l'ancien élément puis l'ajout
-            // du nouveau Il assigne à l'ancien objet toutes les propriétés du nouveau
             Object.assign(oldUser, newUser)
             return oldUser
         } else {
