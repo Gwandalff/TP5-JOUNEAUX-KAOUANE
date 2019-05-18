@@ -50,8 +50,21 @@ tokenModel.getExpirity = () => {
     return expirity
 }
 
+const verifyToken = (token) => {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if(err !== null) {
+          reject()
+        } else {
+          resolve()
+        }
+      })
+    })
+  }
+
 /** return a closure to initialize model */
 module.exports = (model) => {
     usersModel = model
     return tokenModel
 }
+exports.verifyToken = verifyToken

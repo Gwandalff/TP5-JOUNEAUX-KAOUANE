@@ -93,13 +93,18 @@ const update = (id, newUserProperties) => {
     if (usersFound.length === 1) {
         const oldUser = usersFound[0]
 
+    
+        // cas où il y a changement de mdp 
+        if(newUserProperties.password) {
+            newUserProperties['password'] = bcrypt.hash(newUserProperties['password'], saltRounds)
+        }
+
         const newUser = {
             ...oldUser,
             ...newUserProperties
         }
 
         if (validateUser(newUser)) {
-            Object.assign(oldUser, newUser)
             return oldUser
         } else {
             throw new Error('user.not.valid')

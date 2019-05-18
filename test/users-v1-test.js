@@ -2,18 +2,25 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const {app} = require('../app')
 
+//module pour le cryptage du mdp
 const bcrypt = require('bcrypt')
 const salt = bcrypt.genSaltSync(10)
 
 chai.should()
 chai.use(chaiHttp)
 
+token = ''
+
+/*
+Tests métodes GET
+*/
 describe('Users tests', () => {
-  it('should list ALL users on /v1/users GET', done => {
+  it('should list ALL users on /v1/users/ GET', done => {
     chai
       .request(app)
       .get('/v1/users')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -27,11 +34,13 @@ describe('Users tests', () => {
         done()
       })
   })
+
   it('should list a SINGLE user on /v1/users/<id> GET', done => {
     chai
       .request(app)
       .get('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -60,7 +69,8 @@ describe('Users tests', () => {
     chai
       .request(app)
       .get('/v1/users/45745c60-unknow-2d42b21b1a3e')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -70,12 +80,16 @@ describe('Users tests', () => {
       })
   })
 
+  /*
+Tests métodes POST
+*/
   it('should add a SINGLE user on /v1/users POST', done => {
     chai
       .request(app)
       .post('/v1/users')
+      .set('Authorization', 'bearer ' + token)
       .send({name: 'Robert', login: 'roro', age: 23, password: 'P4ssW0rD'})
-      .end((err, res) => {
+      .end((_err, res) => {
         res
           .should
           .have
@@ -129,8 +143,9 @@ describe('Users tests', () => {
     chai
       .request(app)
       .post('/v1/users')
-      .send({name: 'Robert', login: 'roro', age: 23, wrongparam: 'value'})
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .send({name: 'Robert', login: 'roro', age: 23, password: 'WrongPassword', wrongparam: 'value'})
+      .end((_err, res) => {
         res
           .should
           .have
@@ -144,7 +159,8 @@ describe('Users tests', () => {
     chai
       .request(app)
       .post('/v1/users')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -154,92 +170,62 @@ describe('Users tests', () => {
       })
   })
 
-  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .send({name: 'Robertinio'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('id')
-        res
-          .body
-          .id
-          .should
-          .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-        res
-          .body
-          .name
-          .should
-          .equal('Robertinio')
-        res
-          .body
-          .login
-          .should
-          .equal('pedro')
-        done()
-      })
-  })
-
-  it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
-    chai
-      .request(app)
-      .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .send({password: 'newPassword'})
-      .end((err, res) => {
-        res
-          .should
-          .have
-          .status(200)
-        res.should.be.json
-        res
-          .body
-          .should
-          .be
-          .a('object')
-        res
-          .body
-          .should
-          .have
-          .property('id')
-        res
-          .body
-          .id
-          .should
-          .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-        res
-          .body
-          .name
-          .should
-          .equal('Robertinio')
-        res
-          .body
-          .login
-          .should
-          .equal('pedro')
-        done()
-      })
-  })
-
+  /*
+Tests métodes PATCH
+*/
+it('should update a SINGLE user on /v1/users/<id> PATCH', done => {
+  chai
+    .request(app)
+    .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+    .set('Authorization', `Bearer` + token)
+    .send({name: 'Robertinio', password: 'pass'})
+    .end((err, res) => {
+      res
+        .should
+        .have
+        .status(200)
+      res.should.be.json
+      res
+        .body
+        .should
+        .be
+        .a('object')
+      res
+        .body
+        .should
+        .have
+        .property('id')
+      res
+        .body
+        .should
+        .not
+        .have
+        .property('password')
+      res
+        .body
+        .id
+        .should
+        .equal('45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+      res
+        .body
+        .name
+        .should
+        .equal('Robertinio')
+      res
+        .body
+        .login
+        .should
+        .equal('pedro')
+      done()
+    })
+})
   it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
     chai
       .request(app)
       .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
+      .set('Authorization', 'bearer ' + token)
       .send({wrongparam1: 'Robertinio'})
-      .end((err, res) => {
+      .end((_err, res) => {
         res
           .should
           .have
@@ -253,8 +239,9 @@ describe('Users tests', () => {
     chai
       .request(app)
       .patch('/v1/users/45745c60-unknow-2d42b21b1a3e')
+      .set('Authorization', 'bearer ' + token)
       .send({name: 'Robertinio'})
-      .end((err, res) => {
+      .end((_err, res) => {
         res
           .should
           .have
@@ -264,11 +251,16 @@ describe('Users tests', () => {
       })
   })
 
+  /*
+Tests métodes DELETE
+*/
+
   it('should delete a SINGLE user on /v1/users/<id> DELETE', done => {
     chai
       .request(app)
       .delete('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -281,7 +273,8 @@ describe('Users tests', () => {
     chai
       .request(app)
       .delete('/v1/users/45745c60-unknown-2d42b21b1a3e')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
@@ -294,7 +287,8 @@ describe('Users tests', () => {
     chai
       .request(app)
       .delete('/v1/users/')
-      .end((err, res) => {
+      .set('Authorization', 'bearer ' + token)
+      .end((_err, res) => {
         res
           .should
           .have
