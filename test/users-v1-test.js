@@ -174,7 +174,7 @@ Tests métodes POST
 Tests métodes PATCH
 */
 // Les deux test PATCH ne passe pas (après de longues heures passé dessus on a continué)
-  /* it('should update a SINGLE user on /v1/users/<id> PATCH (change name)', done => {
+ /*  it('should update a SINGLE user on /v1/users/<id> PATCH (change name)', done => {
     chai
       .request(app)
       .patch('/v1/users/45745c60-7b1a-11e8-9c9c-2d42b21b1a3e')      
@@ -213,7 +213,7 @@ Tests métodes PATCH
           .equal('pedro')
         done()
       })
-  })
+  }) */
 
   it('should update a SINGLE user on /v1/users/<id> PATCH (change passworld)', done => {
     chai
@@ -259,7 +259,7 @@ Tests métodes PATCH
           .equal('jesse')
         done()
       })
-  }) */
+  })
 
   it('should update a user with wrong parameters on /v1/users/<id> PATCH', done => {
     chai

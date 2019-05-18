@@ -46,11 +46,11 @@ router.get('/:id', function (req, res, next) {
 })
 
 // ajout d'un nouvel utilisateur
-router.post('/', function (req, res, next) {
+router.post('/', async (req, res, next) => {
   const newUser = req.body
 
   if (newUser) {
-    usersModel.add(newUser)
+    await usersModel.add(newUser)
     .then((user) => {
     res
       .status(201)
@@ -69,14 +69,14 @@ router.post('/', function (req, res, next) {
 })
 
 
-router.patch('/:id', function (req, res, next) {
+router.patch('/:id', async (req, res, next) => {
   const id = req.params.id
   const newUserProperties = req.body
 
 
   if (id && newUserProperties) {
     try {
-      const updated = usersModel.update(id, newUserProperties)
+      const updated = await usersModel.update(id, newUserProperties)
       res
         .status(200)
         .json(updated)

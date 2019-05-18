@@ -65,8 +65,8 @@ const getAll = () => {
 return result
 }
 
-const add = (user) => {
-    return new Promise((resolve, reject) => {
+const add = async (user) => {
+    return new Promise(async (resolve, reject) => {
         bcrypt.hash(user.password, saltRounds)
         .then((hash) => {
             user.password = hash
@@ -87,14 +87,14 @@ const add = (user) => {
     })
 }
 
-const update = (id, newUserProperties) => {
+const update = async (id, newUserProperties) => {
     const usersFound = users.filter((user) => user.id === id)
 
     if (usersFound.length === 1) {
         const oldUser = usersFound[0]
 
         if( newUserProperties.password){
-            newUserProperties['password']=bcrypt.hash(newUserProperties['password'], saltRounds)
+            newUserProperties['password']=await bcrypt.hash(newUserProperties['password'], saltRounds)
         }
 
         const newUser = {

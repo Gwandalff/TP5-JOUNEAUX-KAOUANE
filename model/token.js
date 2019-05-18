@@ -19,7 +19,7 @@ const verifyOptions = {
 };
 
 tokenModel.getJWT = (user) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         usersModel.verifyUser(user.login, user.password)
         .then(() => {
             const payload = {name : user.name, login : user.login};
@@ -34,7 +34,7 @@ tokenModel.getJWT = (user) => {
 }
 
 tokenModel.checkJWT = (token) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         jwt.verify(token, publicKEY, verifyOptions, (err) => {
             if (err) {
                 reject()
@@ -51,7 +51,7 @@ tokenModel.getExpirity = () => {
 }
 
 const verifyToken = (token) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
       jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if(err !== null) {
           reject()
