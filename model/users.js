@@ -93,10 +93,8 @@ const update = (id, newUserProperties) => {
     if (usersFound.length === 1) {
         const oldUser = usersFound[0]
 
-    
-        // cas où il y a changement de mdp 
-        if(newUserProperties.password) {
-            newUserProperties['password'] = bcrypt.hash(newUserProperties['password'], saltRounds)
+        if( newUserProperties.password){
+            newUserProperties['password']=bcrypt.hash(newUserProperties['password'], saltRounds)
         }
 
         const newUser = {
@@ -104,11 +102,18 @@ const update = (id, newUserProperties) => {
             ...newUserProperties
         }
 
-        if (validateUser(newUser)) {
+        if (validateUser(newUser)) 
+        {
+            // Object.assign permet d'éviter la suppression de l'ancien élément puis l'ajout
+            // du nouveau Il assigne à l'ancien objet toutes les propriétés du nouveau
+            Object.assign(oldUser, newUser)
             return oldUser
-        } else {
+        } 
+        else 
+        {
             throw new Error('user.not.valid')
         }
+
     } else {
         throw new Error('user.not.found')
     }
